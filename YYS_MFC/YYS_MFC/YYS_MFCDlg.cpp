@@ -290,12 +290,6 @@ void CYYS_MFCDlg::rememberOption(FILE*file)
 		}
 		if ((GetAsyncKeyState(VK_ESCAPE) & 0x8000))//退出记录
 		{
-
-			/*click.sleep_time = current - last;
-			click_list.push_back(click);
-			sprintf(buf, "%d,%d:%d\n", click.point.x, click.point.y, click.sleep_time);
-			fwrite(buf, 1, strlen(buf), file);*/
-
 			printf("共有%d次鼠标按下\n",i);
 			printf("已退出记录\n");
 			break;
@@ -323,62 +317,20 @@ void CYYS_MFCDlg :: GetMousePoint(CString type, std::vector<MouseClick> &click_l
 		{
 
 			OpenConSole(type);
-		//lable:
-		//	//printf("请点击鼠标并且按下空格键确定点击位置：\n");
-		//	printf("请点击鼠标并且按下F10确定点击位置：\n");
-		//	while (1)
-		//	{
-		//		if ((GetAsyncKeyState(VK_F10) & 0x8000))
-		//		{
-		//			GetCursorPos(&point);
-		//			break;
-		//		}
-		//		Sleep(20);
-		//	}
-		//	printf("x = %d y = %d\n", point.x, point.y);
-
-		//	printf("请输入间隔时间(ms)：\n");
-
-		//	scanf("%d", &sleeptime);
-		//	//捕获缓冲区中多余的enter scanf只遇到enter提交不处理enter
-		//	char a = getchar();
-		//	printf("time = %d ms\n", sleeptime);
-		//	click.point = point;
-		//	click.sleep_time = sleeptime;
-		//	click_list.push_back(click);
+	
 			rememberOption(file);
-			/*sprintf(buf, "%d,%d:%d\n", point.x, point.y, sleeptime);
-			fwrite(buf, 1, strlen(buf), file);*/
-			/*printf("是否继续插入鼠标点击位置（y/n）:\n");
-
-			scanf("%c", &result);
-			if (result == 'y')
-			{
-				getchar();
-				goto lable;
-			}
-			else
-			{*/
-				printf("输入 %s 运行次数:\n", type);
-				int num = 0;
-				scanf("%d", &num);
-				fclose(file);
-				CloseConSole();
-				/*while (num != 0)
-				{
-					SendMousePressed();
-					if ((GetAsyncKeyState(VK_F11) & 0x8000))
-					{
-						break;
-					}
-					num--;
-				}*/
-				ThreadParam param{ click_list ,num};
-				DWORD ThreadId;
-				HANDLE hThread = ::CreateThread(NULL, 0, ThreadProc, &param, 0, &ThreadId);	
-				CloseHandle(hThread);
+			
+			printf("输入 %s 运行次数:\n", type);
+			int num = 0;
+			scanf("%d", &num);
+			fclose(file);
+			CloseConSole();
 				
-			//}
+			ThreadParam param{ click_list ,num};
+			DWORD ThreadId;
+			HANDLE hThread = ::CreateThread(NULL, 0, ThreadProc, &param, 0, &ThreadId);	
+			CloseHandle(hThread);
+				
 		}
 	}
 	else
@@ -417,15 +369,6 @@ void CYYS_MFCDlg :: GetMousePoint(CString type, std::vector<MouseClick> &click_l
 			scanf("%d", &num);
 			CloseConSole();
 			fclose(file);
-			/*while (num != 0)
-			{
-				SendMousePressed();
-				if ((GetAsyncKeyState(VK_F11) & 0x8000))
-				{
-					break;
-				}
-				num--;
-			}*/
 			ThreadParam param{ click_list ,num };
 			CreateThread(NULL, 0, ThreadProc, &param, 0, 0);
 		}
@@ -448,24 +391,6 @@ void CYYS_MFCDlg::OpenConSole(CString type)
 		//简单处理 默认只有一个命令行窗口
 		if (hwnd != NULL)
 		{
-			/*RECT rect;
-			HMONITOR hmonitor = MonitorFromWindow(hwnd,0x02);
-			if (hmonitor != NULL)
-			{
-				MONITORINFO monitorinfo;
-				if (GetMonitorInfo(hmonitor, &monitorinfo))
-				{
-					rect = monitorinfo.rcWork;
-				}
-			}
-			RECT rect_cosole;
-			rect_cosole.left = rect.right / 2 - 200;
-			rect_cosole.top = rect.bottom / 2 - 150;
-			rect_cosole.right = rect_cosole.left + 400;
-			rect_cosole.bottom = rect_cosole.top + 300;
-			char s[100] = { 0 };
-			sprintf(s, "x = %d y = %d", rect_cosole.left, rect_cosole.top);
-				MessageBox(s);*/
 			::SetWindowPos(hwnd, 0,760, 390, 400,300, SWP_SHOWWINDOW);
 		}
 	}
