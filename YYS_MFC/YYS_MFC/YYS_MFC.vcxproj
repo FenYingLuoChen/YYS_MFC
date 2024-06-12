@@ -189,6 +189,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="DialogBK.h" />
     <ClInclude Include="Function.h" />
     <ClInclude Include="log.h" />
     <ClInclude Include="Resource.h" />
@@ -198,6 +199,7 @@
     <ClInclude Include="YYS_MFCDlg.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="DialogBK.cpp" />
     <ClCompile Include="Function.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

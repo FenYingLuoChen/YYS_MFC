@@ -19,6 +19,7 @@ public:
 #endif
 
 	protected:
+	virtual BOOL OnInitDialog();
 	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV 支持
 	void init_combox();
 
@@ -27,7 +28,6 @@ protected:
 	HICON m_hIcon;
 
 	// 生成的消息映射函数
-	virtual BOOL OnInitDialog();
 	afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
