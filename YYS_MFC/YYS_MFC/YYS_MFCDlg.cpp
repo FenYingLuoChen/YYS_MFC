@@ -30,6 +30,7 @@ public:
 // 实现
 protected:
 	DECLARE_MESSAGE_MAP()
+	
 };
 
 CAboutDlg::CAboutDlg() : CDialogEx(IDD_ABOUTBOX)
@@ -414,8 +415,8 @@ void CYYS_MFCDlg::SendMousePressed()
 	int randNum_x = 0, randNum_y = 0;
 	for (int i = 0; i < click_list.size(); i++)
 	{
-		randNum_x = getRand(0, 5);
-		randNum_y = getRand(0, 5);
+		randNum_x = getRand(0, 10);
+		randNum_y = getRand(0, 10);
 		//单次点击
 		SetCursorPos(click_list.at(i).point.x + randNum_x, click_list.at(i).point.y + randNum_y);
 		mouse_event(MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0);
@@ -477,3 +478,4 @@ void CYYS_MFCDlg::rePosWindowpos()
 		::SetWindowPos(window[1], HWND_NOTOPMOST, x, y + height + 20, width, height, SWP_NOMOVE | SWP_NOSIZE);
 	}
 }
+
