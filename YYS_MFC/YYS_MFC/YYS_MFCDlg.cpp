@@ -238,12 +238,23 @@ struct ThreadParam
 {
 	std::vector<MouseClick> &click_list;
 	int num;
+	CString type;
 };
 DWORD WINAPI ThreadProc(LPVOID lpParam)
 {
 	ThreadParam *param = (ThreadParam *)lpParam;
 	// TODO: Add your thread code here
 	int num = param->num;
+	char * type = param->type.GetBuffer();
+	//探索
+	if (!strcmp(type, "探索"))
+	{
+		while (num != 0)
+		{
+			CYYS_MFCDlg::explore();
+			num--;
+		}
+	}
 	std::vector<MouseClick> click_list = param->click_list;
 	while (num != 0)
 	{
@@ -310,71 +321,86 @@ void CYYS_MFCDlg :: GetMousePoint(CString type, std::vector<MouseClick> &click_l
 	MouseClick click = { 0 };
 	initwindowpos();
 	click_list.clear();
-	if (if_reset)
-	{
-		DeleteFile(filename);
-		FILE *file = fopen(filename, "a+");	
-		if (file)
-		{
+	if(!strcmp(type,"探索"))
+	{ 
+		OpenConSole(type);
+		printf("输入 %s 运行次数:\n", type);
+		int num = 0;
+		scanf("%d", &num);
+		CloseConSole();
 
-			OpenConSole(type);
-	
-			rememberOption(file);
-			
-			printf("输入 %s 运行次数:\n", type);
-			int num = 0;
-			scanf("%d", &num);
-			fclose(file);
-			CloseConSole();
-				
-			ThreadParam param{ click_list ,num};
-			DWORD ThreadId;
-			HANDLE hThread = ::CreateThread(NULL, 0, ThreadProc, &param, 0, &ThreadId);	
-			CloseHandle(hThread);
-				
-		}
+		ThreadParam param{ click_list ,num ,type};
+		DWORD ThreadId;
+		HANDLE hThread = ::CreateThread(NULL, 0, ThreadProc, &param, 0, &ThreadId);
+		CloseHandle(hThread);
 	}
 	else
 	{
-		FILE *file = fopen(filename, "r");
-		int x_num,y_num;
-		if (file)
+		if (if_reset)
 		{
-			OpenConSole(type);
-			while (fscanf(file, "%[^\n]", buf) != EOF)
+			DeleteFile(filename);
+			FILE *file = fopen(filename, "a+");
+			if (file)
 			{
-				fgetc(file);//跳过换行符
-				strcpy(temp, buf);
-				for (int i = 0; i < strlen(buf); i++)
+
+				OpenConSole(type);
+
+				rememberOption(file);
+
+				printf("输入 %s 运行次数:\n", type);
+				int num = 0;
+				scanf("%d", &num);
+				fclose(file);
+				CloseConSole();
+
+				ThreadParam param{ click_list ,num ,type};
+				DWORD ThreadId;
+				HANDLE hThread = ::CreateThread(NULL, 0, ThreadProc, &param, 0, &ThreadId);
+				CloseHandle(hThread);
+
+			}
+		}
+		else
+		{
+			FILE *file = fopen(filename, "r");
+			int x_num, y_num;
+			if (file)
+			{
+				OpenConSole(type);
+				while (fscanf(file, "%[^\n]", buf) != EOF)
 				{
-					if (buf[i] == ',')
+					fgetc(file);//跳过换行符
+					strcpy(temp, buf);
+					for (int i = 0; i < strlen(buf); i++)
 					{
-						memset(&temp[i], 0, strlen(&buf[i]));
-						point.x = atoi(temp);
-						strcpy(temp, &buf[i + 1]);
-					}
-					if (buf[i] == ':')
-					{
-						memset(&temp[i], 0, strlen(&buf[i]));
-						point.y = atoi(temp);
-						sleeptime = atoi(&buf[i+1]);
-						click.point = point;
-						click.sleep_time = sleeptime;
-						click_list.push_back(click);
-						break;
+						if (buf[i] == ',')
+						{
+							memset(&temp[i], 0, strlen(&buf[i]));
+							point.x = atoi(temp);
+							strcpy(temp, &buf[i + 1]);
+						}
+						if (buf[i] == ':')
+						{
+							memset(&temp[i], 0, strlen(&buf[i]));
+							point.y = atoi(temp);
+							sleeptime = atoi(&buf[i + 1]);
+							click.point = point;
+							click.sleep_time = sleeptime;
+							click_list.push_back(click);
+							break;
+						}
 					}
 				}
+				printf("输入 %s 运行次数:\n", type);
+				int num = 0;
+				scanf("%d", &num);
+				CloseConSole();
+				fclose(file);
+				ThreadParam param{ click_list ,num ,type};
+				CreateThread(NULL, 0, ThreadProc, &param, 0, 0);
 			}
-			printf("输入 %s 运行次数:\n", type);
-			int num = 0;
-			scanf("%d", &num);
-			CloseConSole();
-			fclose(file);
-			ThreadParam param{ click_list ,num };
-			CreateThread(NULL, 0, ThreadProc, &param, 0, 0);
 		}
 	}
-	//mouse_event()
 }
 
 
@@ -407,9 +433,7 @@ void CYYS_MFCDlg::CloseConSole()
 
 
 
-int getRand(int min, int max) {
-	return (rand() % (max - min + 1)) + min;
-}
+
 void CYYS_MFCDlg::SendMousePressed()
 {
 	int randNum_x = 0, randNum_y = 0;
@@ -445,6 +469,11 @@ void CYYS_MFCDlg::OnClose()
 		delete[] window;
 		window = NULL;
 	}
+	if (MyPicture::window != NULL)
+	{
+		delete[]MyPicture::window;
+		MyPicture::window = NULL;
+	}
 	//rePosWindowpos();
 	CDialogEx::OnClose();
 }
@@ -452,6 +481,7 @@ void CYYS_MFCDlg::OnClose()
 void CYYS_MFCDlg::initwindowpos()
 {
 	GetYYSWindow(classname, window);
+
 	if (IsWindow(window[0]))
 	{
 		::MoveWindow(window[0], x, y, width, height, true);
@@ -460,7 +490,7 @@ void CYYS_MFCDlg::initwindowpos()
 	if (IsWindow(window[1]))
 	{
 		::MoveWindow(window[1], x, y + height + 20, width, height, true);
-		::SetWindowPos(window[1], HWND_TOPMOST, x, y + height + 20, width, height, SWP_NOMOVE | SWP_NOSIZE);
+		::SetWindowPos(window[1],HWND_TOPMOST, x, y + height + 20, width, height, SWP_NOMOVE | SWP_NOSIZE);
 	}
 }
 
@@ -479,3 +509,89 @@ void CYYS_MFCDlg::rePosWindowpos()
 	}
 }
 
+CYYS_MFCDlg * CYYS_MFCDlg::Get()   
+{
+	if (Hinstance == NULL)
+	{
+		Hinstance = new CYYS_MFCDlg();
+	}
+	return Hinstance;
+}
+vector<MyPicture*>vecPicture;
+void CYYS_MFCDlg::explore()
+{
+	//初始化图片
+	if (vecPicture.size() == 0)
+	{
+		vecPicture.push_back(new MyPicture("C://YYS//Bitmap//Explore//OK.bmp"));
+		vecPicture.push_back(new MyPicture("C://YYS//Bitmap//Explore//Fight.bmp"));
+		vecPicture.push_back(new MyPicture("C://YYS//Bitmap//Explore//Final.bmp"));
+		vecPicture.push_back(new MyPicture("C://YYS//Bitmap//Explore//Award.bmp"));
+		vecPicture.push_back(new MyPicture("C://YYS//Bitmap//Explore//Accept.bmp"));
+	}
+	//start
+	MyPicture::type = 0;
+	vecPicture[0]->Click();
+
+	//explore
+	int i = 0;
+	BOOL clickRet = TRUE;
+	while (i < 20)
+	{
+		if (vecPicture[2]->Click())
+		{
+			Sleep(3500);
+			vecPicture[2]->EndClick();
+			Sleep(500);
+			MyPicture::type = 1;
+			vecPicture[2]->EndClick();
+			Sleep(500);
+			MyPicture::type = 0;
+			break;
+		}
+		if (!clickRet)
+		{
+			MyPicture::MouseDrag();
+		}
+		clickRet = FALSE;
+		clickRet = vecPicture[1]->Click();
+		if (clickRet)
+		{
+			Sleep(3500);
+			vecPicture[1]->EndClick();
+			Sleep(500);
+			MyPicture::type = 1;
+			vecPicture[1]->EndClick();
+			Sleep(500);
+			MyPicture::type = 0;
+		}
+		i++;
+	}
+	//clean Award
+	i = 0;
+	while (i < 4)
+	{
+		if (vecPicture[3]->Click())
+		{
+			Sleep(2000);
+			vecPicture[3]->EndClick();
+			Sleep(500);
+			MyPicture::type = 1;
+			if (vecPicture[3]->Click())
+			{
+				vecPicture[1]->EndClick();
+				Sleep(500);
+			}
+			MyPicture::type = 0;
+		}
+		i++;
+	}
+	Sleep(4000);
+	MyPicture::type = 1;
+	vecPicture[4]->Click();
+	Sleep(3500);
+}
+
+CString CYYS_MFCDlg::classname;
+int CYYS_MFCDlg::x, CYYS_MFCDlg::y, CYYS_MFCDlg::width, CYYS_MFCDlg::height;
+CYYS_MFCDlg * CYYS_MFCDlg :: Hinstance = NULL;
