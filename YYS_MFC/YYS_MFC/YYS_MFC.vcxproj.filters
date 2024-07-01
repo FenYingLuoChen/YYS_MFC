@@ -42,9 +42,6 @@
     <ClInclude Include="DialogBK.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="MyPicture.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="YYS_MFC.cpp">
@@ -60,9 +57,6 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="DialogBK.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="MyPicture.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

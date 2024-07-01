@@ -1,19 +1,30 @@
-﻿生成启动时间为 2024/7/1 13:15:13。
+﻿生成启动时间为 2024/6/12 10:03:24。
      1>项目“C:\Users\user3520\Git_Project\YYS_MFC\YYS_MFC\YYS_MFC\YYS_MFC\YYS_MFC.vcxproj”在节点 2 上(Build 个目标)。
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\CL.exe /c /Zi /nologo /W3 /WX- /sdl /O2 /Oi /Oy- /GL /D WIN32 /D _WINDOWS /D NDEBUG /D _CRT_SECURE_NO_WARNINGS /D _MBCS /Gm- /EHsc /MT /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Yu"stdafx.h" /Fp"Release\YYS_MFC.pch" /Fo"Release\\" /Fd"Release\vc140.pdb" /Gd /TP /analyze- /errorReport:prompt MyPicture.cpp
-         MyPicture.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\CL.exe /c /Zi /nologo /W3 /WX- /sdl /O2 /Oi /Oy- /GL /D WIN32 /D _WINDOWS /D NDEBUG /D _CRT_SECURE_NO_WARNINGS /D _MBCS /D _AFXDLL /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Yu"stdafx.h" /Fp"Release\YYS_MFC.pch" /Fo"Release\\" /Fd"Release\vc140.pdb" /Gd /TP /analyze- /errorReport:prompt Function.cpp YYS_MFC.cpp YYS_MFCDlg.cpp
+         Function.cpp
+     1>Function.cpp(166): warning C4018: “<”: 有符号/无符号不匹配
+         YYS_MFC.cpp
+         YYS_MFCDlg.cpp
+     1>c:\users\user3520\git_project\yys_mfc\yys_mfc\yys_mfc\yys_mfc\log.h(2): warning C4068: 未知的杂注
+     1>YYS_MFCDlg.cpp(279): warning C4244: “=”: 从“time_t”转换到“int”，可能丢失数据
+     1>YYS_MFCDlg.cpp(348): warning C4018: “<”: 有符号/无符号不匹配
+     1>YYS_MFCDlg.cpp(324): warning C4477: 'printf' : format string '%s' requires an argument of type 'char *', but variadic argument 1 has type 'CString'
+     1>YYS_MFCDlg.cpp(368): warning C4477: 'printf' : format string '%s' requires an argument of type 'char *', but variadic argument 1 has type 'CString'
+     1>YYS_MFCDlg.cpp(308): warning C4101: “result”: 未引用的局部变量
+     1>YYS_MFCDlg.cpp(340): warning C4101: “x_num”: 未引用的局部变量
+     1>YYS_MFCDlg.cpp(340): warning C4101: “y_num”: 未引用的局部变量
+     1>YYS_MFCDlg.cpp(416): warning C4018: “<”: 有符号/无符号不匹配
        Link:
-         C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\user3520\Git_Project\YYS_MFC\YYS_MFC\YYS_MFC\Release\YYS_MFC.exe" /INCREMENTAL:NO /NOLOGO /MANIFEST /MANIFESTUAC:"level='requireAdministrator' uiAccess='false'" /manifest:embed /manifestinput:"C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\Include\Manifest\dpiaware.manifest" /Debug /PDB:"C:\Users\user3520\Git_Project\YYS_MFC\YYS_MFC\YYS_MFC\Release\YYS_MFC.pdb" /SUBSYSTEM:WINDOWS /OPT:REF /OPT:ICF /LTCG:incremental /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\user3520\Git_Project\YYS_MFC\YYS_MFC\YYS_MFC\Release\YYS_MFC.lib" /MACHINE:X86 /SAFESEH Release\YYS_MFC.res
+         C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\user3520\Git_Project\YYS_MFC\YYS_MFC\YYS_MFC\Release\YYS_MFC.exe" /INCREMENTAL:NO /NOLOGO /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /manifestinput:"C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\Include\Manifest\dpiaware.manifest" /Debug /PDB:"C:\Users\user3520\Git_Project\YYS_MFC\YYS_MFC\YYS_MFC\Release\YYS_MFC.pdb" /SUBSYSTEM:WINDOWS /OPT:REF /OPT:ICF /LTCG:incremental /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\user3520\Git_Project\YYS_MFC\YYS_MFC\YYS_MFC\Release\YYS_MFC.lib" /MACHINE:X86 /SAFESEH Release\YYS_MFC.res
          Release\DialogBK.obj
          Release\Function.obj
-         Release\MyPicture.obj
          Release\stdafx.obj
          Release\YYS_MFC.obj
          Release\YYS_MFCDlg.obj
          正在生成代码
-         1 of 844 functions ( 0.1%) were compiled, the rest were copied from previous compilation.
-           0 functions were new in current compilation
+         472 of 482 functions (97.9%) were compiled, the rest were copied from previous compilation.
+           38 functions were new in current compilation
            2 functions had inline decision re-evaluated but remain unchanged
          已完成代码的生成
          YYS_MFC.vcxproj -> C:\Users\user3520\Git_Project\YYS_MFC\YYS_MFC\YYS_MFC\Release\YYS_MFC.exe
@@ -21,4 +32,4 @@
 
 已成功生成。
 
-已用时间 00:00:04.12
+已用时间 00:00:02.95
