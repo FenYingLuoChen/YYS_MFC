@@ -85,7 +85,6 @@ BOOL CYYS_MFCDlg::OnInitDialog()
 	//LONG style = ::GetWindowLong(this->m_hWnd, GWL_STYLE);
 	////去边框
 	//::SetWindowLong(m_hWnd, GWL_STYLE, style&~WS_CAPTION);
-	LOG("init_combox hwnd = %X  str = %s",m_hWnd,"TestLog");
 	init_combox();
 	
 	// IDM_ABOUTBOX 必须在系统命令范围内。
@@ -238,21 +237,35 @@ struct ThreadParam
 {
 	std::vector<MouseClick> &click_list;
 	int num;
+	CString type;
 };
 DWORD WINAPI ThreadProc(LPVOID lpParam)
 {
 	ThreadParam *param = (ThreadParam *)lpParam;
 	// TODO: Add your thread code here
 	int num = param->num;
-	std::vector<MouseClick> click_list = param->click_list;
-	while (num != 0)
+	char * type = param->type.GetBuffer();
+	//探索
+	if (!strcmp(type, "探索"))
 	{
-		SendMousePressed(click_list);
-		if ((GetAsyncKeyState(VK_F11) & 0x8000))
+		while (num != 0)
 		{
-			break;
+			CYYS_MFCDlg::explore();
+			num--;
 		}
-		num--;
+	}
+	else
+	{
+		std::vector<MouseClick> click_list = param->click_list;
+		while (num != 0)
+		{
+			SendMousePressed(click_list);
+			if ((GetAsyncKeyState(VK_F11) & 0x8000))
+			{
+				break;
+			}
+			num--;
+		}
 	}
 	return 0;
 }
@@ -310,71 +323,86 @@ void CYYS_MFCDlg :: GetMousePoint(CString type, std::vector<MouseClick> &click_l
 	MouseClick click = { 0 };
 	initwindowpos();
 	click_list.clear();
-	if (if_reset)
-	{
-		DeleteFile(filename);
-		FILE *file = fopen(filename, "a+");	
-		if (file)
-		{
+	if(!strcmp(type,"探索"))
+	{ 
+		OpenConSole(type);
+		printf("输入 %s 运行次数:\n", type);
+		int num = 0;
+		scanf("%d", &num);
+		CloseConSole();
 
-			OpenConSole(type);
-	
-			rememberOption(file);
-			
-			printf("输入 %s 运行次数:\n", type);
-			int num = 0;
-			scanf("%d", &num);
-			fclose(file);
-			CloseConSole();
-				
-			ThreadParam param{ click_list ,num};
-			DWORD ThreadId;
-			HANDLE hThread = ::CreateThread(NULL, 0, ThreadProc, &param, 0, &ThreadId);	
-			CloseHandle(hThread);
-				
-		}
+		ThreadParam param{ click_list ,num ,type};
+		DWORD ThreadId;
+		HANDLE hThread = ::CreateThread(NULL, 0, ThreadProc, &param, 0, &ThreadId);
+		CloseHandle(hThread);
 	}
 	else
 	{
-		FILE *file = fopen(filename, "r");
-		int x_num,y_num;
-		if (file)
+		if (if_reset)
 		{
-			OpenConSole(type);
-			while (fscanf(file, "%[^\n]", buf) != EOF)
+			DeleteFile(filename);
+			FILE *file = fopen(filename, "a+");
+			if (file)
 			{
-				fgetc(file);//跳过换行符
-				strcpy(temp, buf);
-				for (int i = 0; i < strlen(buf); i++)
+
+				OpenConSole(type);
+
+				rememberOption(file);
+
+				printf("输入 %s 运行次数:\n", type);
+				int num = 0;
+				scanf("%d", &num);
+				fclose(file);
+				CloseConSole();
+
+				ThreadParam param{ click_list ,num ,type};
+				DWORD ThreadId;
+				HANDLE hThread = ::CreateThread(NULL, 0, ThreadProc, &param, 0, &ThreadId);
+				CloseHandle(hThread);
+
+			}
+		}
+		else
+		{
+			FILE *file = fopen(filename, "r");
+			int x_num, y_num;
+			if (file)
+			{
+				OpenConSole(type);
+				while (fscanf(file, "%[^\n]", buf) != EOF)
 				{
-					if (buf[i] == ',')
+					fgetc(file);//跳过换行符
+					strcpy(temp, buf);
+					for (int i = 0; i < strlen(buf); i++)
 					{
-						memset(&temp[i], 0, strlen(&buf[i]));
-						point.x = atoi(temp);
-						strcpy(temp, &buf[i + 1]);
-					}
-					if (buf[i] == ':')
-					{
-						memset(&temp[i], 0, strlen(&buf[i]));
-						point.y = atoi(temp);
-						sleeptime = atoi(&buf[i+1]);
-						click.point = point;
-						click.sleep_time = sleeptime;
-						click_list.push_back(click);
-						break;
+						if (buf[i] == ',')
+						{
+							memset(&temp[i], 0, strlen(&buf[i]));
+							point.x = atoi(temp);
+							strcpy(temp, &buf[i + 1]);
+						}
+						if (buf[i] == ':')
+						{
+							memset(&temp[i], 0, strlen(&buf[i]));
+							point.y = atoi(temp);
+							sleeptime = atoi(&buf[i + 1]);
+							click.point = point;
+							click.sleep_time = sleeptime;
+							click_list.push_back(click);
+							break;
+						}
 					}
 				}
+				printf("输入 %s 运行次数:\n", type);
+				int num = 0;
+				scanf("%d", &num);
+				CloseConSole();
+				fclose(file);
+				ThreadParam param{ click_list ,num ,type};
+				CreateThread(NULL, 0, ThreadProc, &param, 0, 0);
 			}
-			printf("输入 %s 运行次数:\n", type);
-			int num = 0;
-			scanf("%d", &num);
-			CloseConSole();
-			fclose(file);
-			ThreadParam param{ click_list ,num };
-			CreateThread(NULL, 0, ThreadProc, &param, 0, 0);
 		}
 	}
-	//mouse_event()
 }
 
 
@@ -407,9 +435,7 @@ void CYYS_MFCDlg::CloseConSole()
 
 
 
-int getRand(int min, int max) {
-	return (rand() % (max - min + 1)) + min;
-}
+
 void CYYS_MFCDlg::SendMousePressed()
 {
 	int randNum_x = 0, randNum_y = 0;
@@ -445,6 +471,11 @@ void CYYS_MFCDlg::OnClose()
 		delete[] window;
 		window = NULL;
 	}
+	if (MyPicture::window != NULL)
+	{
+		delete[]MyPicture::window;
+		MyPicture::window = NULL;
+	}
 	//rePosWindowpos();
 	CDialogEx::OnClose();
 }
@@ -452,6 +483,7 @@ void CYYS_MFCDlg::OnClose()
 void CYYS_MFCDlg::initwindowpos()
 {
 	GetYYSWindow(classname, window);
+
 	if (IsWindow(window[0]))
 	{
 		::MoveWindow(window[0], x, y, width, height, true);
@@ -460,7 +492,7 @@ void CYYS_MFCDlg::initwindowpos()
 	if (IsWindow(window[1]))
 	{
 		::MoveWindow(window[1], x, y + height + 20, width, height, true);
-		::SetWindowPos(window[1], HWND_TOPMOST, x, y + height + 20, width, height, SWP_NOMOVE | SWP_NOSIZE);
+		::SetWindowPos(window[1],HWND_TOPMOST, x, y + height + 20, width, height, SWP_NOMOVE | SWP_NOSIZE);
 	}
 }
 
@@ -479,3 +511,143 @@ void CYYS_MFCDlg::rePosWindowpos()
 	}
 }
 
+CYYS_MFCDlg * CYYS_MFCDlg::Get()   
+{
+	if (Hinstance == NULL)
+	{
+		Hinstance = new CYYS_MFCDlg();
+	}
+	return Hinstance;
+}
+vector<MyPicture*>vecPicture;
+int ExploreBigTime = 0, ExploreSmallTime = 0, ExploreMediumTime = 0;
+void CYYS_MFCDlg::explore()
+{
+	//初始化图片
+	if (vecPicture.size() == 0)
+	{
+		vecPicture.push_back(new MyPicture("C://YYS//Bitmap//Explore//OK.bmp"));
+		vecPicture.push_back(new MyPicture("C://YYS//Bitmap//Explore//Fight.bmp"));
+		vecPicture.push_back(new MyPicture("C://YYS//Bitmap//Explore//Final.bmp"));
+		vecPicture.push_back(new MyPicture("C://YYS//Bitmap//Explore//Award.bmp"));
+		vecPicture.push_back(new MyPicture("C://YYS//Bitmap//Explore//Accept.bmp"));
+	}
+	if (ExploreBigTime == 0)
+	{
+		FILE * file = fopen("C://YYS//Explore.txt","r");
+		if (file == NULL)
+		{
+			file = fopen("C://YYS//Explore.txt", "a+");
+			if (file)
+			{
+				CYYS_MFCDlg::Get()->OpenConSole("Explore input Time");
+				Debug("输入大间隔时间：");
+				scanf("%d", &ExploreBigTime);
+				fprintf(file, "B=%d\n", ExploreBigTime);
+				Debug("输入小间隔时间：");
+				scanf("%d", &ExploreSmallTime);
+				fprintf(file, "S=%d\n", ExploreSmallTime);
+				Debug("输入中间隔时间：");
+				scanf("%d", &ExploreMediumTime);
+				fprintf(file, "M=%d\n", ExploreMediumTime);
+				CYYS_MFCDlg::Get()->CloseConSole();
+				fclose(file);
+			}	
+		}
+		else
+		{
+			char buf[1024] = { 0 };
+			while (fscanf(file, "%[^\n]", buf) != EOF)
+			{
+				fgetc(file);//跳过换行符
+				if (buf[0] == 'B')
+				{
+					ExploreBigTime = atoi(&buf[2]);
+				}
+				if (buf[0] == 'S')
+				{
+					ExploreSmallTime = atoi(&buf[2]);
+				}
+				if (buf[0] == 'M')
+				{
+					ExploreMediumTime = atoi(&buf[2]);
+				}
+			}
+			fclose(file);
+		}
+	}
+	//start
+	MyPicture::type = 0;
+	vecPicture[0]->Click();
+	Sleep(ExploreBigTime);
+	//explore
+	int i = 0;
+	BOOL clickRet = TRUE;
+	while (i < 20)
+	{
+		if (vecPicture[2]->Click())
+		{
+			Sleep(ExploreBigTime);
+			vecPicture[2]->EndClick();
+			Sleep(ExploreMediumTime);
+			vecPicture[2]->EndClick();
+			Sleep(ExploreSmallTime);
+			MyPicture::type = 1;
+			vecPicture[2]->EndClick();
+			Sleep(ExploreMediumTime);
+			vecPicture[2]->EndClick();
+			Sleep(ExploreSmallTime);
+			MyPicture::type = 0;
+			break;
+		}
+		if (!clickRet)
+		{
+			MyPicture::MouseDrag();
+		}
+		clickRet = FALSE;
+		clickRet = vecPicture[1]->Click();
+		if (clickRet)
+		{
+			Sleep(ExploreBigTime);
+			vecPicture[2]->EndClick();
+			Sleep(ExploreMediumTime);
+			vecPicture[1]->EndClick();
+			Sleep(ExploreSmallTime);
+			MyPicture::type = 1;
+			vecPicture[2]->EndClick();
+			Sleep(ExploreMediumTime);
+			vecPicture[1]->EndClick();
+			Sleep(ExploreSmallTime);
+			MyPicture::type = 0;
+		}
+		i++;
+	}
+	//clean Award
+	i = 0;
+	while (i < 4)
+	{
+		if (vecPicture[3]->Click())
+		{
+			Sleep(ExploreBigTime);
+			vecPicture[3]->EndClick();
+			Sleep(ExploreMediumTime);
+			MyPicture::type = 1;
+			if (vecPicture[3]->Click())
+			{
+				Sleep(ExploreBigTime);
+				vecPicture[3]->EndClick();
+				Sleep(ExploreMediumTime);
+			}
+			MyPicture::type = 0;
+		}
+		i++;
+	}
+	Sleep(ExploreBigTime);
+	MyPicture::type = 1;
+	vecPicture[4]->Click();
+	Sleep(ExploreBigTime);
+}
+
+CString CYYS_MFCDlg::classname;
+int CYYS_MFCDlg::x, CYYS_MFCDlg::y, CYYS_MFCDlg::width, CYYS_MFCDlg::height;
+CYYS_MFCDlg * CYYS_MFCDlg :: Hinstance = NULL;

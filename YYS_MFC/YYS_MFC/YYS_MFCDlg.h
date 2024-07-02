@@ -5,6 +5,7 @@
 #pragma once
 #include "afxwin.h"
 #include "Function.h"
+#include "MyPicture.h"
 
 // CYYS_MFCDlg ¶Ô»°¿ò
 class CYYS_MFCDlg : public CDialogEx
@@ -52,12 +53,15 @@ public:
 	CComboBox m_combox;
 	POINT point = { 0 };
 	int sleeptime;
-	int x, y, width, height;
-	CString classname;
+	static int x, y, width, height;
+	static CString classname;
 	HWND *window = NULL;
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 	afx_msg void OnClose();
 	void initwindowpos();
 	void rePosWindowpos();
 	DWORD WindowFormat[2] = { 0 };
+	static CYYS_MFCDlg*Get();
+	static CYYS_MFCDlg * Hinstance;
+	static void explore();
 };

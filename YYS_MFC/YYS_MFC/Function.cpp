@@ -165,8 +165,8 @@ void SendMousePressed(std::vector<MouseClick> &click_list)
 	int randNum_x = 0,randNum_y = 0;
 	for (int i = 0; i < click_list.size(); i++)
 	{
-		randNum_x = getRand_(0, 5);
-		randNum_y = getRand_(0, 5);
+		randNum_x = getRand_(0, 10);
+		randNum_y = getRand_(0, 10);
 		//µ¥´Îµã»÷
 		SetCursorPos(click_list.at(i).point.x+ randNum_x, click_list.at(i).point.y + randNum_y);
 		mouse_event(MOUSEEVENTF_LEFTDOWN,0 , 0, 0, 0);
@@ -176,3 +176,40 @@ void SendMousePressed(std::vector<MouseClick> &click_list)
 	}
 }
 
+void widechar2char(wchar_t * widechar_str, char *char_str)
+{
+	int length = WideCharToMultiByte(CP_ACP, 0, widechar_str, -1, NULL, 0, NULL, NULL);
+	char *temp = new char[length];
+	if (temp)
+	{
+		WideCharToMultiByte(CP_ACP, 0, widechar_str, -1, temp, length, NULL, NULL);
+		strcpy(char_str, temp);
+		delete temp;
+	}
+}
+
+void char2widechar(char *char_str, wchar_t * widechar_str)
+{
+	int length = MultiByteToWideChar(CP_ACP, 0, char_str, -1, NULL, 0);
+	wchar_t *temp = new wchar_t[length];
+	if (temp)
+	{
+		MultiByteToWideChar(CP_ACP, 0, char_str, -1, temp, length);
+		wcscpy(widechar_str, temp);
+		delete temp;
+	}
+}
+
+void Debug(const char* format, ...)
+{
+	va_list args;
+	va_start(args, format);
+	char buf[1024] = { 0 };
+	vsprintf(buf, format, args);
+	strcat(buf, "\n");
+	printf(buf);
+	va_end(args);
+}
+int getRand(int min, int max) {
+	return (rand() % (max - min + 1)) + min;
+}
